@@ -74,6 +74,19 @@ themes = {
     ]
 }
 
+
+def update_timer():
+    global seconds
+    global minutes
+    
+    if timer_running:
+        seconds += 1
+        minutes = seconds // 60
+        seconds = seconds % 60
+        time_str = f"{minutes:02}:{seconds:02}"
+        canvas.itemconfig(timer_text,text="Time: "+time_str)
+        root.after(1000, update_timer)  # Update every 1 second
+
 root=Tk()
 root.geometry("600x700")
 root.resizable(False, False)
@@ -111,7 +124,6 @@ wrongletclicked=[]
 correctlettersclicked=[]
 
 dash=len(word)
-limit = False
 score = 0
 
 def pos(event):
@@ -120,18 +132,13 @@ def pos(event):
 canvas.bind( "<Button-1>", pos )
 
 themetext = "Theme: " + str(randtheme)
-canvas.create_text(410, 42, anchor="center", text=themetext, fill = "white", font=("Arial", 20, "bold"))
-#
-#
-# timer = canvas.create_text(342, 70, text = 0,fill="white",font=("Arial", 20, "bold"))
-# async def timfunction():
-#     global score
-#     while not limit:
-#         await asyncio.sleep(1)
-#         score = score+1
-#         canvas.itemconfigure(timer, text=score)
-# timfunction()
+canvas.create_text(410, 70, anchor="center", text=themetext, fill = "white", font=("Arial", 20, "bold"))
 
+seconds = -1
+minutes = 0
+timer_running = True
+timer_text = canvas.create_text(410, 35, anchor = "center", text = "Time: 00:00", fill = "white", font=("Arial", 20, "bold"))
+update_timer()
 
 def stand():
     canvas.create_line(199, 80, 199, 40, fill = "white", width = 8)
@@ -229,7 +236,7 @@ def showlet(letter, correct_or_wrong):
     global ngs
     global correctlettersclicked
     global dashcoords
-    global limit
+    global timer_running
 
     if correct_or_wrong:
         if letter in correctlettersclicked:
@@ -260,7 +267,7 @@ def showlet(letter, correct_or_wrong):
 
                             DCL = dashcoords[index + 1]
                             letterlbl = canvas.create_text((DCL[0] + 18), DCL[2] - 18, anchor="center", text=item,
-                                                               fill="green", font=("Arial", 16, "bold"))
+                                                               fill="white", font=("Arial", 16, "bold"))
                             # letterlbl = tk.Label(root, pady=-100, bg ="#025718", fg = "white", bd = 5, font=("Arial", 16, "bold"), textvariable=text)
                             # letterlbl.place(x=(DCL[0]+7),y=DCL[2]-36)
                             print("\n\n\n" + str(DCL))
@@ -271,7 +278,8 @@ def showlet(letter, correct_or_wrong):
 
                         root.attributes('-disabled', 1)
                         print("You won!")
-                        limit = True
+                        timer_running = False
+                        
 
     else:
         for index, item in enumerate(word_list):
@@ -332,7 +340,7 @@ def buttons():
 def nexth():
     global hangmanbodynum
     global wrongletclicked
-    global limit
+    global timer_running
     if hangmanbodynum==1:
         face()
     elif hangmanbodynum==2:
@@ -354,7 +362,7 @@ def nexth():
 
         root.attributes('-disabled', 1)
         print("You Lost!")
-        limit = True
+        timer_running = False
 
 
     hangmanbodynum = hangmanbodynum+1
@@ -409,6 +417,7 @@ buttons()
 
 
 
+
 #for i in letlist:
 #    if ((letlist.index(i)+1) > dash):
 #        break
@@ -426,5 +435,6 @@ buttons()
 
 
 canvas.pack()
+
 mainloop()
 
