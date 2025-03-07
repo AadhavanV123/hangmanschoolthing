@@ -5,6 +5,10 @@ import time
 from functools import partial
 import random
 import asyncio
+import os
+from subprocess import run
+
+#WORDS WITH SPACES NEED TO WORK
 
 themes = {
     "Food": [
@@ -82,20 +86,18 @@ def update_timer():
     if timer_running:
         seconds += 1
         minutes = seconds // 60
-        seconds = seconds % 60
-        time_str = f"{minutes:02}:{seconds:02}"
+        sec = seconds % 60
+        time_str = f"{minutes:02}:{sec:02}"
         canvas.itemconfig(timer_text,text="Time: "+time_str)
         root.after(1000, update_timer)  # Update every 1 second
 
 root=Tk()
 root.geometry("600x700")
 root.resizable(False, False)
-
+root.title("\"Hnagman\" by Aadhavan")
 
 canvas = Canvas(root, bg="#025718",
            height=700, width=600)
-
-
 
 key, val = random.choice(list(themes.items()))
 randtheme = key
@@ -125,6 +127,10 @@ correctlettersclicked=[]
 
 dash=len(word)
 score = 0
+
+word_list = []
+for i in word.upper():
+    word_list.append(i)
 
 def pos(event):
     print("x = " + str(event.x) + ", y = " + str(event.y))
@@ -172,6 +178,7 @@ def dashes():
     global dcordx1
     global dcordx2
     for i in range(1,dash+1):
+        
         if i == 1:
             dashcoords.setdefault(i,[]).extend([dcordx1,dcordx2,dcordym])
             canvas.create_line(dcordx1,dcordym,dcordx2,dcordym, fill = "white", width = 5)
@@ -240,6 +247,8 @@ def showlet(letter, correct_or_wrong):
 
     if correct_or_wrong:
         if letter in correctlettersclicked:
+            if letter == " ":
+                print()
             print("Letter already clicked!")
         else:
             for index, item in enumerate(word_list):
@@ -256,6 +265,8 @@ def showlet(letter, correct_or_wrong):
                     # letterlbl.place(x=(DCL[0]+7),y=DCL[2]-36)
                     print("\n\n\n" + str(DCL))
                     correctlettersclicked.append(letter)
+                    if letter == " ":
+                        canvas.create_line(DCL[0],DCL[2],DCL[1],DCL[2], fill = "#025718", width = 5)
 
                     if showletnum == dash:
 
@@ -276,10 +287,8 @@ def showlet(letter, correct_or_wrong):
 
                         the_text = canvas.create_text(300, 300, anchor="center", text="You Won! 😄", fill = "white", font=("Arial", 64, "bold"))
 
-                        root.attributes('-disabled', 1)
-                        print("You won!")
                         timer_running = False
-                        
+                        root.after(3000, restartgame)
 
     else:
         for index, item in enumerate(word_list):
@@ -298,7 +307,10 @@ def showlet(letter, correct_or_wrong):
 
 
 
-
+def restartgame():
+    root.quit()
+    root.destroy()
+    run("python hangman.py", check=True)
 
 
 
@@ -363,6 +375,8 @@ def nexth():
         root.attributes('-disabled', 1)
         print("You Lost!")
         timer_running = False
+        root.after(3000, restartgame)
+        
 
 
     hangmanbodynum = hangmanbodynum+1
@@ -372,10 +386,7 @@ def nexth():
 
 
 
-word_list = []
-for i in word.upper():
 
-    word_list.append(i)
 
 
 
@@ -388,6 +399,7 @@ def butclick(btnname):
     global wrongletclicked
     global correctlettersclicked
     print(btnname)
+    showlet(" ",True)
     if btnname in word_list:
         showlet(btnname, True)
         correctlettersclicked.append(btnname)
@@ -413,6 +425,7 @@ def butclick(btnname):
 dashes()
 stand()
 buttons()
+showlet(" ", True)
 
 
 
@@ -434,7 +447,7 @@ buttons()
 
 
 
-canvas.pack()
 
+canvas.pack()
 mainloop()
 
