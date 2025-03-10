@@ -99,47 +99,6 @@ root.title("\"Hnagman\" by Aadhavan")
 canvas = Canvas(root, bg="#025718",
            height=700, width=600)
 
-key, val = random.choice(list(themes.items()))
-randtheme = key
-randword = val[random.randint(0,len(val)-1)]
-
-word = randword
-
-dashcoords = {}
-
-hangmanbodynum = 1
-
-dcordx1 = 30
-dcordx2 = 70
-
-dcordym = 367
-letlist = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
-butdict = {}
-
-wrongletnum = 1
-wrongletx = 300
-wronglety = 135
-
-showletnum = 0
-ngs = 0
-wrongletclicked=[]
-correctlettersclicked=[]
-
-dash=len(word)
-score = 0
-
-word_list = []
-for i in word.upper():
-    word_list.append(i)
-
-def pos(event):
-    print("x = " + str(event.x) + ", y = " + str(event.y))
-
-canvas.bind( "<Button-1>", pos )
-
-seconds = -1
-minutes = 0
-timer_running = False
 def game():
     canvas.delete("all")
     global key
@@ -168,6 +127,13 @@ def game():
     global minutes
     global timer_running
     global timer_text
+    global keyspressed
+    global haxtext
+    global haxbro
+
+    haxtext = ""
+
+    keyspressed = ""
         
     key, val = random.choice(list(themes.items()))
     randtheme = key
@@ -498,8 +464,44 @@ def game():
     buttons()
     showlet(" ", True)
 
+    def changehaxtext():
+        global haxbro
+        
+        root.after(3000, canvas.itemconfig(haxbro,text=""))
+        #
 
+    def haxdoing():
+        global haxtext
+        global haxbro
+        var = IntVar()
+        root.after(1000, var.set, 1)
+        haxtext = "hax: " + randword.upper()
+        haxbro = canvas.create_text(80, 15, anchor="center", text=haxtext, fill = "white", font=("Arial", 5, "bold"))
+    ##  
+        root.wait_variable(var)   
 
+    def key_handler(event):
+        global keyspressed
+        global haxtext
+        global haxbro
+        keyspressed += str(event.char)
+        #print("Keys: " + keyspressed)
+        if "hangmanhax" in keyspressed:
+            print("Ok bro")
+            keyspressed = ""
+            haxtext = "hax: " + randword.upper()
+##            haxbro = canvas.create_text(80, 15, anchor="center", text=haxtext, fill = "white", font=("Arial", 10, "bold"))
+####            for i in word_list:
+####                if i not in correctlettersclicked:
+####                    showlet(i, False)
+##            #changehaxtext()
+##            time.sleep(1)
+##            canvas.itemconfig(haxbro,text="        ")
+            haxdoing()
+            canvas.itemconfig(haxbro,text="        ")
+
+    root.bind("<Key>", key_handler)
+    
 
 
     #for i in letlist:
