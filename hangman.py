@@ -7,94 +7,102 @@ import random
 import asyncio
 import os
 from subprocess import run
+from tkinter import PhotoImage
 
-#WORDS WITH SPACES NEED TO WORK
 
 themes = {
     "Food": [
-        "Apple", "Banana", "Orange", "Cake", "Cookie", "Pizza", "Burger", "Pasta", 
-        "Ice Cream", "Spaghetti", "Donut", "Muffin", "Chocolate", "Lollipop", "Waffle", 
-        "Taco", "Sushi", "Steak", "Salad", "Pineapple", "Cheese", "Cereal", "Pudding", 
-        "Popcorn", "Cupcake", "Pie", "Lemon", "Watermelon", "Grapes", "Bacon"
+        "APPLE", "BANANA", "ORANGE", "CAKE", "COOKIE", "PIZZA", "BURGER", "FRIES", 
+        "SPAGHETTI", "ICE CREAM", "DONUT", "MUFFIN", "CHOCOLATE", "LOLLIPOP", "WAFFLE", 
+        "TACO", "SUSHI", "STEAK", "SALAD", "CHEESE", "CEREAL", "PUDDING", "POPCORN", 
+        "CUPCAKE", "PIE", "LEMON", "WATERMELON", "GRAPES", "BACON", "HOT DOG", 
+        "SANDWICH", "TOAST", "MILK", "JUICE", "RICE", "NOODLES", "BREAD", "CORN", "PEAS", 
+        "YOGURT", "CHIPS", "PICKLES", "CARROT", "TOMATO", "CUCUMBER", "GARLIC", "ONION"
     ],
     "Toys": [
-        "Action Figure", "Doll", "Teddy Bear", "LEGO", "Puzzle", "Ball", "Rubik's Cube", 
-        "Yo-Yo", "Kite", "Drone", "Toy Train", "Building Blocks", "Stuffed Animal", 
-        "Bicycle", "Swing", "Marbles", "Jigsaw", "Plushie", "Rubber Duck", "Top", 
-        "Hula Hoop", "Rubber Ball", "Spinning Top", "Fidget Spinner", "Toy Car", "Trampoline"
+        "BALL", "DOLL", "TOY CAR", "LEGO", "DRONE", "PUZZLE", "KITE", 
+        "TEDDY BEAR", "YO-YO", "HULA HOOP", "BICYCLE", "TRAMPOLINE", "SWING", "TOY TRAIN", 
+        "RUBBER DUCK", "MARBLES", "PLUSHIE", "ACTION FIGURE", "FRISBEE", "BOUNCY BALL", 
+        "BUILDING BLOCKS", "TOY ROBOT", "WATER GUN", "RUBBER BAND", "BOUNCY CASTLE"
     ],
     "Shapes": [
-        "Circle", "Square", "Triangle", "Rectangle", "Pentagon", "Hexagon", "Octagon", 
-        "Star", "Heart", "Diamond", "Spiral", "Crescent", "Ellipse", "Cube", "Cone", 
-        "Cylinder", "Pyramid", "Tetrahedron", "Prism", "Sphere", "Rhombus", "Arrow", "Wave"
+        "CIRCLE", "SQUARE", "TRIANGLE", "RECTANGLE", "STAR", "HEART", "DIAMOND", "OVAL", 
+        "CUBE", "CONE", "SPHERE", "PYRAMID", "ARROW", "CROSS", "MOON", "SUN", "WAVE", 
+        "SPIRAL", "HEXAGON", "OCTAGON", "ELLIPSE", "CYLINDER", "CONE", "BOX", "LADDER"
     ],
     "Weather": [
-        "Sun", "Rain", "Snow", "Cloud", "Wind", "Thunderstorm", "Lightning", "Fog", 
-        "Hail", "Tornado", "Hurricane", "Cyclone", "Blizzard", "Drought", "Tempest", 
-        "Vortex", "Eclipse", "Heatwave", "Monsoon", "Gale", "Sleet", "Drizzle", "Mist"
+        "RAIN", "SUN", "SNOW", "WIND", "CLOUD", "STORM", "THUNDER", "FOG", "HAIL", 
+        "DRIZZLE", "HEATWAVE", "TORNADO", "LIGHTNING", "BLIZZARD", "RAINBOW", "MIST", 
+        "HURRICANE", "CYCLONE", "CLEAR", "CHILLY", "SLEET", "MONSOON", "FROST"
     ],
     "Technology": [
-        "Computer", "Smartphone", "Tablet", "Laptop", "Camera", "Drone", "GPS", "Smartwatch", 
-        "Robot", "Internet", "Wi-Fi", "Bluetooth", "Printer", "Scanner", "Microwave", 
-        "Smart TV", "Virtual Reality", "Augmented Reality", "Blockchain", "Software", 
-        "App", "Server", "Cloud", "Hologram", "Camera", "Electric Car"
+        "COMPUTER", "PHONE", "LAPTOP", "TABLET", "CAMERA", "WI-FI", "DRONE", "PRINTER", 
+        "MOUSE", "KEYBOARD", "TV", "SMARTWATCH", "APP", "GAME", "WEBSITE", "E-MAIL", 
+        "PASSWORD", "CLOUD", "BLUETOOTH", "VIDEO", "SPEAKER", "ROUTER", "SCANNER", "SEARCH", 
+        "BATTERY", "FLASHLIGHT", "CABLE", "SMARTPHONE"
     ],
     "Nature": [
-        "Tree", "Mountain", "River", "Ocean", "Forest", "Desert", "Cactus", "Flower", 
-        "Sunflower", "Rainforest", "Waterfall", "Lake", "Rock", "Cave", "Coral Reef", 
-        "Volcano", "Island", "Glacier", "Tundra", "Swamp", "Meadow", "Pond", "Grassland", 
-        "Cliff", "Wildlife", "Earth", "Soil"
+        "TREE", "FLOWER", "MOUNTAIN", "RIVER", "OCEAN", "CLOUD", "ROCK", "BIRD", "FISH", 
+        "ANIMAL", "GRASS", "LAKE", "BEACH", "FOREST", "SKY", "SUNFLOWER", "CACTUS", "RAIN", 
+        "DESERT", "POND", "BUSH", "LEAF", "SEA", "RAINFOREST", "SUN", "MEADOW", "LAKESIDE"
     ],
     "Places": [
-        "House", "Mansion", "Castle", "Beach", "Park", "Museum", "Zoo", "Library", 
-        "Hospital", "City", "Town", "Village", "Island", "Airport", "Factory", "Farm", 
-        "Cave", "Mountain", "School", "Restaurant", "Church", "Bank", "Theater", "Hotel", 
-        "Garden", "Mall"
+        "HOUSE", "PARK", "ZOO", "MUSEUM", "LIBRARY", "SCHOOL", "BEACH", "RESTAURANT", 
+        "HOSPITAL", "FARM", "CHURCH", "HOTEL", "MALL", "BANK", "STORE", "AIRPORT", "CITY", 
+        "TOWN", "FARM", "SHOP", "MOUNTAIN", "CAVE", "SCHOOL", "PLAYGROUND", "GARDEN"
     ],
     "Objects": [
-        "Chair", "Table", "Lamp", "Phone", "Cup", "Shoes", "Bag", "Clock", "Key", 
-        "Door", "Plate", "Fork", "Spoon", "Brush", "Scissors", "Shirt", "Guitar", "Trolley", 
-        "Jacket", "Scarf", "Teapot", "Biscuit", "Magnet", "Chalk", "Tractor", "Mirror", 
-        "Helmet", "Rug", "Cushion", "Towel", "Toothbrush", "Wallet", "Pillow", "Ladder", 
-        "Faucet", "Kettle"
+        "CHAIR", "TABLE", "LAMP", "PHONE", "BAG", "CLOCK", "KEY", "DOOR", "PLATE", 
+        "FORK", "SPOON", "BRUSH", "SHIRT", "SHOES", "JACKET", "SOCKS", "PEN", "NOTEBOOK", 
+        "BOOK", "TOOTHBRUSH", "WALLET", "PILLOW", "GLASSES", "MUG", "TOWEL", "SCISSORS", 
+        "RUG", "MIRROR", "HELMET", "SCARF", "CUSHION"
     ],
     "Animals": [
-        "Dog", "Cat", "Fish", "Bird", "Lion", "Tiger", "Elephant", "Whale", "Dolphin", 
-        "Giraffe", "Crocodile", "Bear", "Penguin", "Rabbit", "Kangaroo", "Panda", "Koala", 
-        "Zebra", "Horse", "Parrot", "Snake", "Turtle", "Monkey", "Gorilla", "Shark", 
-        "Octopus", "Bat", "Leopard", "Eagle", "Raven", "Cheetah", "Buffalo", "Hippopotamus"
+        "DOG", "CAT", "BIRD", "FISH", "LION", "TIGER", "ELEPHANT", "WHALE", "SHARK", 
+        "RABBIT", "HORSE", "MONKEY", "BEAR", "KANGAROO", "KOALA", "PENGUIN", "SNAKE", 
+        "GIRAFFE", "ZEBRA", "CROCODILE", "PANDA", "PARROT", "GOAT", "COW", "SHEEP", "PIG", 
+        "DUCK", "CHICKEN", "HORSE", "FROG", "BAT", "EAGLE", "SPIDER", "TURTLE", "OWL"
     ],
     "Entertainment": [
-        "Movie", "Music", "Concert", "Game", "Theater", "Dance", "Play", "Sport", "Festival", 
-        "Magic", "Juggling", "Clown", "Circus", "Amusement Park", "Roller Coaster", "Opera", 
-        "Comedy", "Drama", "Documentary", "Podcast", "YouTube", "Vlog", "Reality Show", 
-        "Quiz", "Game Show", "Book", "Magazine", "Puzzles", "TV Show", "Dance", "DJ"
+        "MOVIE", "MUSIC", "GAME", "TV SHOW", "PLAY", "SPORT", "DANCE", "COMEDY", "DRAMA", 
+        "OPERA", "CONCERT", "JOKE", "PUZZLES", "BOOKS", "MAGAZINES", "PODCAST", "VLOG", 
+        "VIDEO", "MOVIE THEATER", "VIDEO GAME", "GAME SHOW", "CARTOON", "QUIZ", "DANCE PARTY", 
+        "MUSIC VIDEO", "YOUTUBE", "RADIO"
     ],
     "Fantasy": [
-        "Vampire", "Dragon", "Unicorn", "Fairy", "Wizard", "Witch", "Mermaid", "Troll", 
-        "Griffin", "Phoenix", "Gargoyle", "Elf", "Werewolf", "Zombie", "Doppelganger", 
-        "Paradox", "Sorcerer", "Potion", "Magic", "Mystic", "Wand", "Teleport", "Rune", 
-        "Dungeon", "Cursed", "Necromancer", "Portal"
+        "DRAGON", "VAMPIRE", "WITCH", "WIZARD", "UNICORN", "MERMAID", "FAIRY", "ELF", 
+        "TROLL", "ZOMBIE", "WEREWOLF", "GHOST", "SORCERER", "POTION", "MAGIC", "SPELL", 
+        "MONSTER", "GRIFFIN", "GOLEM", "PHOENIX", "BASILISK", "GOBLIN", "CHIMERA", 
+        "ENCHANTED", "CASTLE", "SWORD", "CURSED", "WAND"
+    ],
+    "Sports": [
+        "SOCCER", "BASKETBALL", "BASEBALL", "TENNIS", "FOOTBALL", "GOLF", "HOCKEY", 
+        "VOLLEYBALL", "CRICKET", "RUGBY", "SWIMMING", "CYCLING", "BOXING", "RUNNING", 
+        "GYMNASTICS", "WEIGHTLIFTING", "SKATING", "SNOWBOARDING", "SURFING", "ROWING", 
+        "PING PONG", "BADMINTON", "WRESTLING", "TRACK", "FIELD", "BOWLING", "KARATE"
+    ],
+    "Vehicles": [
+        "CAR", "BUS", "BICYCLE", "TRUCK", "MOTORCYCLE", "SCOOTER", "PLANE", "BOAT", 
+        "TRAIN", "SUBWAY", "HELICOPTER", "TAXI", "LIMO", "VAN", "TRACTOR", "SPACESHIP", 
+        "YACHT", "SHIP", "BUS STOP", "CART", "ROCKET", "ICE CREAM TRUCK", "RACING CAR"
+    ],
+    "Colors": [
+        "RED", "BLUE", "GREEN", "YELLOW", "ORANGE", "PURPLE", "PINK", "BROWN", "BLACK", 
+        "WHITE", "GRAY", "CYAN", "MAGENTA", "TEAL", "IVORY", "BEIGE", "VIOLET", "GOLD", 
+        "SILVER", "INDIGO", "TURQUOISE", "LAVENDER", "MINT", "CRIMSON"
     ]
 }
 
 
-def update_timer():
-    global seconds
-    global minutes
-    
-    if timer_running:
-        seconds += 1
-        minutes = seconds // 60
-        sec = seconds % 60
-        time_str = f"{minutes:02}:{sec:02}"
-        canvas.itemconfig(timer_text,text="Time: "+time_str)
-        root.after(1000, update_timer)  # Update every 1 second
+
+
 
 root=Tk()
 root.geometry("600x700")
 root.resizable(False, False)
 root.title("\"Hnagman\" by Aadhavan")
+icon = PhotoImage(file="hangmanicon.png")
+root.iconphoto(False, icon)
 
 canvas = Canvas(root, bg="#025718",
            height=700, width=600)
@@ -130,6 +138,17 @@ def game():
     global keyspressed
     global haxtext
     global haxbro
+    global time_str
+    global hint_time
+    global hint_time_sec
+    global hint_time_min
+    global hint_time
+    global hint_num_allow
+    global hint_btns
+    global hint_btn_num
+    global hint_word
+    global hint_let
+    global no_of_hints
 
     haxtext = ""
 
@@ -140,6 +159,8 @@ def game():
     randword = val[random.randint(0,len(val)-1)]
 
     word = randword
+    hint_word = word
+    hint_let = ""
 
     dashcoords = {}
 
@@ -163,6 +184,14 @@ def game():
 
     dash=len(word)
     score = 0
+    hint_time = 30
+    hint_time_sec = 30
+    hint_time_min = 0
+    hint_num_allow = 3
+    hint_btns = {}
+    hint_btn_num = 1
+    no_of_hints = 0
+    
 
     word_list = []
     for i in word.upper():
@@ -177,11 +206,74 @@ def game():
     minutes = 0
     timer_running = True
     timer_text = canvas.create_text(410, 35, anchor = "center", text = "Time: 00:00", fill = "white", font=("Arial", 20, "bold"))
-    update_timer()
-
     themetext = "Theme: " + str(randtheme)
-    canvas.create_text(410, 70, anchor="center", text=themetext, fill = "white", font=("Arial", 20, "bold"))
+    canvas.create_text(417, 70, anchor="center", text=themetext, fill = "white", font=("Arial", 20, "bold"))
 
+    def update_timer():
+        global seconds
+        global minutes
+        global timer_text
+        global time_str
+        global hint_time
+        global hint_time_sec
+        global hint_time_min
+        global hint_num_allow
+        global hint_btn_num
+        global no_of_hints
+        
+        if timer_running:
+            seconds += 1
+            minutes = seconds // 60
+            sec = seconds % 60
+            time_str = f"{minutes:02}:{sec:02}"
+            canvas.itemconfig(timer_text,text="Time: "+time_str)
+            root.after(1000, update_timer)
+            
+            if minutes == hint_time_min and sec == hint_time_sec:
+                if no_of_hints <= 3:
+                    showhintbtn()
+                hint_btn_num +=1
+                hint_time = hint_time + 30
+                hint_time_min = hint_time // 60
+                hint_time_sec = hint_time % 60
+
+
+        
+    def showhintbtn():
+        global hint_btns
+        global hint_btn_num
+        global hint_word
+        global no_of_hints
+        print("hint yay")
+        btn = Button(root, text = "Hint x" + str(hint_btn_num), command = partial(hintbtn, hint_btn_num), width=8)
+        canvas.create_window(407, 70 + 40*int(hint_btn_num), window = btn)
+        hint_btns["hint" + str(hint_btn_num)] = btn
+        print(hint_btns)
+        no_of_hints += 1
+        
+
+    def hintbtn(num):
+        global hint_word
+        global hint_let
+        global hint_btns
+        global correctlettersclicked
+        print("btn" + str(num) + " clicked")
+        for i in hint_word:
+            print("let:",i)
+            if i in correctlettersclicked:
+                print(i,"yes")
+                hint_word = hint_word.replace(i, "")
+                print("hntword:",hint_word)
+        hint_let = random.choice(hint_word)
+        print(hint_let)
+        print(hint_word)
+        showlet(hint_let, True)
+        hint_btns["hint" + str(num)].destroy()
+        print("clc: " + str(correctlettersclicked))
+        
+
+
+    
     def stand():
         canvas.create_line(199, 80, 199, 40, fill = "white", width = 8)
         canvas.create_line(250, 40, 10, 40, fill = "white", width = 10)
@@ -284,7 +376,7 @@ def game():
 
         if correct_or_wrong:
             if letter in correctlettersclicked:
-                if letter == " ":
+                if letter == " " or letter == "'" or letter == "-":
                     print()
                 print("Letter already clicked!")
             else:
@@ -297,14 +389,26 @@ def game():
                         text.set(letter)
 
                         DCL = dashcoords[index+1]
-                        letterlbl= canvas.create_text((DCL[0]+18), DCL[2]-18, anchor="center", text=letter, fill="white", font=("Arial", 16, "bold"))
+
+                        if letter == " ":
+                            canvas.create_line(DCL[0],DCL[2],DCL[1],DCL[2], fill = "#025718", width = 5)
+##                        elif letter == "'":
+##                            canvas.create_line(DCL[0],DCL[2],DCL[1],DCL[2], fill = "#025718", width = 5)
+##                            letterlbl = canvas.create_text((DCL[0]), DCL[2] - 18, anchor="center", text="’",
+##                                                                   fill="white", font=("Arial", 50, "bold"))
+                        elif letter == "-":
+                            canvas.create_line(DCL[0],DCL[2],DCL[1],DCL[2], fill = "#025718", width = 5)
+                            canvas.create_line(DCL[0]+5,DCL[2]-18,DCL[1]-5,DCL[2]-18, fill = "white", width = 5)
+##                            letterlbl = canvas.create_text((DCL[0] + 18), DCL[2] - 18, anchor="center", text="-",
+##                                                                   fill="white", font=("Arial", 16, "bold"))
+
+                        else:
+                            letterlbl= canvas.create_text((DCL[0]+18), DCL[2]-18, anchor="center", text=letter, fill="white", font=("Arial", 16, "bold"))
                         # letterlbl = tk.Label(root, pady=-100, bg ="#025718", fg = "white", bd = 5, font=("Arial", 16, "bold"), textvariable=text)
                         # letterlbl.place(x=(DCL[0]+7),y=DCL[2]-36)
                         print("\n\n\n" + str(DCL))
                         correctlettersclicked.append(letter)
-                        if letter == " ":
-                            canvas.create_line(DCL[0],DCL[2],DCL[1],DCL[2], fill = "#025718", width = 5)
-
+                        
                         if showletnum == dash:
 
                             for index, item in enumerate(word_list):
@@ -325,7 +429,7 @@ def game():
                             the_text = canvas.create_text(300, 300, anchor="center", text="You Won! 😄", fill = "white", font=("Arial", 64, "bold"))
 
                             timer_running = False
-                            root.after(3000, restartgame)
+                            root.after(4000, restartgame)
 
         else:
             for index, item in enumerate(word_list):
@@ -350,7 +454,7 @@ def game():
         run("python hangman.py", check=True)
 
 
-
+    
 
 
 
@@ -458,12 +562,6 @@ def game():
                 wrongletclicked.append(btnname)
 
 
-
-    dashes()
-    stand()
-    buttons()
-    showlet(" ", True)
-
     def changehaxtext():
         global haxbro
         
@@ -475,6 +573,52 @@ def game():
         global haxbro
         var = IntVar()
         root.after(1000, var.set, 1)
+        haxtext = "hax: " + randword.upper()
+        haxbro = canvas.create_text(80, 15, anchor="center", text=haxtext, fill = "white", font=("Arial", 5, "bold"))
+    ##  
+        root.wait_variable(var)   
+
+    def key_handler(event):
+        global keyspressed
+        global haxtext
+        global haxbro
+        keyspressed += str(event.char)
+        #print("Keys: " + keyspressed)
+        if "hangmanhax" in keyspressed:
+            print("Ok bro")
+            keyspressed = ""
+            haxtext = "hax: " + randword.upper()
+##            haxbro = canvas.create_text(80, 15, anchor="center", text=haxtext, fill = "white", font=("Arial", 10, "bold"))
+####            for i in word_list:
+####                if i not in correctlettersclicked:
+####                    showlet(i, False)
+##            #changehaxtext()
+##            time.sleep(1)
+##            canvas.itemconfig(haxbro,text="        ")
+            haxdoing()
+            canvas.itemconfig(haxbro,text="               ")
+
+    root.bind("<Key>", key_handler)
+
+    update_timer()
+    dashes()
+    stand()
+    buttons()
+    showlet(" ", True)
+##    showlet("'", True)
+    showlet("-", True)
+
+    def changehaxtext():
+        global haxbro
+        
+        root.after(3000, canvas.itemconfig(haxbro,text=""))
+        #
+
+    def haxdoing():
+        global haxtext
+        global haxbro
+        var = IntVar()
+        root.after(250, var.set, 1)
         haxtext = "hax: " + randword.upper()
         haxbro = canvas.create_text(80, 15, anchor="center", text=haxtext, fill = "white", font=("Arial", 5, "bold"))
     ##  
