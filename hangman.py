@@ -8,6 +8,7 @@ import asyncio
 import os
 from subprocess import run
 from tkinter import PhotoImage
+import sys
 
 
 themes = {
@@ -106,8 +107,19 @@ root.iconphoto(False, icon)
 
 canvas = Canvas(root, bg="#025718",
            height=700, width=600)
+scorefilepath = "score.txt"
+if not os.path.exists(scorefilepath):
+    with open(scorefilepath, 'x') as f:
+        pass
+        print(f"Created file: {scorefilepath}")
 
+def exitgame():
+    root.quit()
+    root.destroy()
 def game():
+    def exitgame():
+        root.quit()
+        root.destroy()
     canvas.delete("all")
     global key
     global val
@@ -149,6 +161,7 @@ def game():
     global hint_word
     global hint_let
     global no_of_hints
+    global score
 
     haxtext = ""
 
@@ -175,7 +188,7 @@ def game():
 
     wrongletnum = 1
     wrongletx = 300
-    wronglety = 135
+    wronglety = 165
 
     showletnum = 0
     ngs = 0
@@ -205,9 +218,15 @@ def game():
     seconds = -1
     minutes = 0
     timer_running = True
-    timer_text = canvas.create_text(410, 35, anchor = "center", text = "Time: 00:00", fill = "white", font=("Arial", 20, "bold"))
+    timer_text = canvas.create_text(410, 65, anchor = "center", text = "Time: 00:00", fill = "white", font=("Arial", 20, "bold"))
     themetext = "Theme: " + str(randtheme)
-    canvas.create_text(417, 70, anchor="center", text=themetext, fill = "white", font=("Arial", 20, "bold"))
+    canvas.create_text(417, 100, anchor="center", text=themetext, fill = "white", font=("Arial", 20, "bold"))
+
+    canvas.create_text(417, 30, anchor="center", text="Score: 00", fill = "white", font=("Arial", 20, "bold"))
+
+
+    exitgamebtn = Button(root, text = "Exit 😞" , command = exitgame, width=8)
+    canvas.create_window(545, 30, window = exitgamebtn)
 
     def update_timer():
         global seconds
@@ -228,9 +247,9 @@ def game():
             time_str = f"{minutes:02}:{sec:02}"
             canvas.itemconfig(timer_text,text="Time: "+time_str)
             root.after(1000, update_timer)
-            
             if minutes == hint_time_min and sec == hint_time_sec:
-                if no_of_hints <= 3:
+                if no_of_hints <= 4:
+                    print("noofhintqwes: " + str(no_of_hints))
                     showhintbtn()
                 hint_btn_num +=1
                 hint_time = hint_time + 30
@@ -246,11 +265,11 @@ def game():
         global no_of_hints
         print("hint yay")
         btn = Button(root, text = "Hint x" + str(hint_btn_num), command = partial(hintbtn, hint_btn_num), width=8)
-        canvas.create_window(407, 70 + 40*int(hint_btn_num), window = btn)
+        canvas.create_window(220+60*int(hint_btn_num), 128, window = btn)
         hint_btns["hint" + str(hint_btn_num)] = btn
         print(hint_btns)
-        no_of_hints += 1
-        
+        no_of_hints = no_of_hints + 1
+        print("noofhints: " + str(no_of_hints))
 
     def hintbtn(num):
         global hint_word
@@ -451,7 +470,7 @@ def game():
     def restartgame():
         root.quit()
         root.destroy()
-        run("python hangman.py", check=True)
+        run("python hangman.py CONTINUE", check=True)
 
 
     
@@ -599,7 +618,7 @@ def game():
             canvas.itemconfig(haxbro,text="               ")
 
     root.bind("<Key>", key_handler)
-
+    
     update_timer()
     dashes()
     stand()
@@ -659,16 +678,18 @@ def game():
 
 
 #game()
-def exitgame():
-    root.quit()
-    root.destroy()
 
 
-play = Button(root, text = "Play 😄" , command = game, width=10)
-canvas.create_window(300, 270, window = play)
-exitgame = Button(root, text = "Exit 😞" , command = exitgame, width=10)
-canvas.create_window(300, 420, window = exitgame)
-the_text = canvas.create_text(300, 100, anchor="center", text="\"Hnagman\" by Aadhavan", fill = "white", font=("Arial", 32, "bold"))
+if len(sys.argv) > 1:
+    if sys.argv[1] == "CONTINUE":
+        game()
+else:
+        
+    play = Button(root, text = "Play 😄" , command = game, width=10)
+    canvas.create_window(300, 270, window = play)
+    exitgame = Button(root, text = "Exit 😞" , command = exitgame, width=10)
+    canvas.create_window(300, 420, window = exitgame)
+    the_text = canvas.create_text(300, 100, anchor="center", text="\"Hnagman\" by Aadhavan", fill = "white", font=("Arial", 32, "bold"))
 
 
 canvas.pack()
