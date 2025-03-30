@@ -9,6 +9,7 @@ import os
 from subprocess import run
 from tkinter import PhotoImage
 import sys
+import pandas as pd
 
 
 themes = {
@@ -107,17 +108,25 @@ root.iconphoto(False, icon)
 
 canvas = Canvas(root, bg="#025718",
            height=700, width=600)
-scorefilepath = "score.txt"
-if not os.path.exists(scorefilepath):
-    with open(scorefilepath, 'x') as f:
-        pass
-        print(f"Created file: {scorefilepath}")
+scorefilepath = "score.csv"
+score = 0
+seconds = -1
+try:
+    scoredf = pd.read_csv(scorefilepath)
+except FileNotFoundError:
+    scoredf = pd.DataFrame(columns=['Score'])
 
-def exitgame():
-    root.quit()
-    root.destroy()
 def game():
     def exitgame():
+        global scoredf
+        global scorefilepath
+        global score
+        if 'Score' in scoredf.columns:
+            new_score = pd.DataFrame({'Score': [score]})
+            scoredf = pd.concat([scoredf, new_score], ignore_index=True)
+        else:
+            scoredf = pd.DataFrame({'Score': [score]})
+        scoredf.to_csv(scorefilepath, index=False)
         root.quit()
         root.destroy()
     canvas.delete("all")
@@ -162,6 +171,9 @@ def game():
     global hint_let
     global no_of_hints
     global score
+    global scorefilepath
+    global scoredf
+    global score_lbl
 
     haxtext = ""
 
@@ -196,10 +208,6 @@ def game():
     correctlettersclicked=[]
 
     dash=len(word)
-    score = 0
-    hint_time = 30
-    hint_time_sec = 30
-    hint_time_min = 0
     hint_num_allow = 3
     hint_btns = {}
     hint_btn_num = 1
@@ -215,14 +223,14 @@ def game():
 
     canvas.bind( "<Button-1>", pos )
 
-    seconds = -1
+    
     minutes = 0
     timer_running = True
     timer_text = canvas.create_text(410, 65, anchor = "center", text = "Time: 00:00", fill = "white", font=("Arial", 20, "bold"))
     themetext = "Theme: " + str(randtheme)
     canvas.create_text(417, 100, anchor="center", text=themetext, fill = "white", font=("Arial", 20, "bold"))
 
-    canvas.create_text(417, 30, anchor="center", text="Score: 00", fill = "white", font=("Arial", 20, "bold"))
+    score_lbl = canvas.create_text(417, 30, anchor="center", text="Score: 00", fill = "white", font=("Arial", 20, "bold"))
 
 
     exitgamebtn = Button(root, text = "Exit 😞" , command = exitgame, width=8)
@@ -239,6 +247,9 @@ def game():
         global hint_num_allow
         global hint_btn_num
         global no_of_hints
+        global score
+        global score_lbl
+        
         
         if timer_running:
             seconds += 1
@@ -247,6 +258,8 @@ def game():
             time_str = f"{minutes:02}:{sec:02}"
             canvas.itemconfig(timer_text,text="Time: "+time_str)
             root.after(1000, update_timer)
+            hint_time_min = hint_time // 60
+            hint_time_sec = hint_time % 60
             if minutes == hint_time_min and sec == hint_time_sec:
                 if no_of_hints <= 4:
                     print("noofhintqwes: " + str(no_of_hints))
@@ -256,7 +269,7 @@ def game():
                 hint_time_min = hint_time // 60
                 hint_time_sec = hint_time % 60
 
-
+            canvas.itemconfig(score_lbl,text=f"Score: {score:02}")
         
     def showhintbtn():
         global hint_btns
@@ -392,7 +405,9 @@ def game():
         global correctlettersclicked
         global dashcoords
         global timer_running
-
+        global score
+        global score_lbl
+        
         if correct_or_wrong:
             if letter in correctlettersclicked:
                 if letter == " " or letter == "'" or letter == "-":
@@ -422,6 +437,8 @@ def game():
 ##                                                                   fill="white", font=("Arial", 16, "bold"))
 
                         else:
+                            score += 1
+                            canvas.itemconfig(score_lbl,text=f"Score: {score:02}")
                             letterlbl= canvas.create_text((DCL[0]+18), DCL[2]-18, anchor="center", text=letter, fill="white", font=("Arial", 16, "bold"))
                         # letterlbl = tk.Label(root, pady=-100, bg ="#025718", fg = "white", bd = 5, font=("Arial", 16, "bold"), textvariable=text)
                         # letterlbl.place(x=(DCL[0]+7),y=DCL[2]-36)
@@ -448,7 +465,7 @@ def game():
                             the_text = canvas.create_text(300, 300, anchor="center", text="You Won! 😄", fill = "white", font=("Arial", 64, "bold"))
 
                             timer_running = False
-                            root.after(4000, restartgame)
+                            root.after(3000, restartgame)
 
         else:
             for index, item in enumerate(word_list):
@@ -468,10 +485,13 @@ def game():
 
 
     def restartgame():
+        global score
+        global seconds
+        global hint_time
         root.quit()
         root.destroy()
-        run("python hangman.py CONTINUE", check=True)
-
+        run("python hangman.py CONTINUE " + str(score) + " " + str(seconds) + " " + str(hint_time), check=True)
+        
 
     
 
@@ -558,6 +578,9 @@ def game():
         global hangmanbodynum
         global wrongletclicked
         global correctlettersclicked
+        global score
+        global score_lbl
+        
         print(btnname)
         showlet(" ",True)
         if btnname in word_list:
@@ -571,6 +594,8 @@ def game():
             if btnname in wrongletclicked:
                 print("Letter already clicked!")
             else:
+                score = score - 1
+                canvas.itemconfig(score_lbl,text=f"Score: {score:02}")
                 text = tk.StringVar()
                 text.set(btnname)
                 canvas.create_text(wrongletx,wronglety,text=btnname,fill="white",font=("Arial", 28, "bold"))
@@ -579,6 +604,7 @@ def game():
                 wrongletx = wrongletx+50
                 nexth()
                 wrongletclicked.append(btnname)
+                
 
 
     def changehaxtext():
@@ -678,16 +704,22 @@ def game():
 
 
 #game()
-
+def exitgamenormal():
+    root.quit()
+    root.destroy()
 
 if len(sys.argv) > 1:
+    score = int(sys.argv[2])
+    seconds = int(sys.argv[3])+3
+    hint_time = int(sys.argv[4])
     if sys.argv[1] == "CONTINUE":
         game()
+    
 else:
         
     play = Button(root, text = "Play 😄" , command = game, width=10)
     canvas.create_window(300, 270, window = play)
-    exitgame = Button(root, text = "Exit 😞" , command = exitgame, width=10)
+    exitgame = Button(root, text = "Exit 😞" , command = exitgamenormal, width=10)
     canvas.create_window(300, 420, window = exitgame)
     the_text = canvas.create_text(300, 100, anchor="center", text="\"Hnagman\" by Aadhavan", fill = "white", font=("Arial", 32, "bold"))
 
