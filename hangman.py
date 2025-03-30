@@ -103,14 +103,15 @@ root=Tk()
 root.geometry("600x700")
 root.resizable(False, False)
 root.title("\"Hnagman\" by Aadhavan")
-icon = PhotoImage(file="hangmanicon.png")
-root.iconphoto(False, icon)
+#icon = PhotoImage(file="hangmanicon.png")
+#root.iconphoto(False, icon)
 
 canvas = Canvas(root, bg="#025718",
            height=700, width=600)
 scorefilepath = "score.csv"
 score = 0
 seconds = -1
+hint_time = 0
 try:
     scoredf = pd.read_csv(scorefilepath)
 except FileNotFoundError:
@@ -160,7 +161,6 @@ def game():
     global haxtext
     global haxbro
     global time_str
-    global hint_time
     global hint_time_sec
     global hint_time_min
     global hint_time
@@ -702,7 +702,7 @@ def game():
 
 
 
-
+highscore_text = scoredf['Score'].max()
 #game()
 def exitgamenormal():
     root.quit()
@@ -722,7 +722,7 @@ else:
     exitgame = Button(root, text = "Exit 😞" , command = exitgamenormal, width=10)
     canvas.create_window(300, 420, window = exitgame)
     the_text = canvas.create_text(300, 100, anchor="center", text="\"Hnagman\" by Aadhavan", fill = "white", font=("Arial", 32, "bold"))
-
+    highscorelbl  = canvas.create_text(300, 185, anchor="center", text="HIGHSCORE: " + str(highscore_text), fill = "white", font=("Arial", 32, "bold"))
 
 canvas.pack()
 mainloop()
