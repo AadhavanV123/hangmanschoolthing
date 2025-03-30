@@ -103,8 +103,8 @@ root=Tk()
 root.geometry("600x700")
 root.resizable(False, False)
 root.title("\"Hnagman\" by Aadhavan")
-#icon = PhotoImage(file="hangmanicon.png")
-#root.iconphoto(False, icon)
+icon = PhotoImage(file="hangmanicon.png")
+root.iconphoto(False, icon)
 
 canvas = Canvas(root, bg="#025718",
            height=700, width=600)
