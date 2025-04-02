@@ -14,6 +14,17 @@ from pygame import mixer
 
 ## NEED TO DO SOUND EFFECTS (ONLY IN HOME) AND NEED TO ADD PLAYER NAMES AND PROGRESS BAR
 
+##Total wins, total losses
+##
+##Average incorrect guesses per game
+##
+##Average time taken per game
+##
+##Longest streak of correct guesses
+##
+##Words guessed correctly in a row
+
+
 ##
 ##import tkinter as tk
 ##
