@@ -12,7 +12,7 @@ import sys
 import pandas as pd
 from pygame import mixer
 
-## NEED TO DO SOUND EFFECTS (ONLY IN HOME) AND NEED TO ADD PLAYER NAMES
+## NEED TO DO SOUND EFFECTS (ONLY IN HOME) AND NEED TO ADD PLAYER NAMES AND PROGRESS BAR
 
 ##
 ##import tkinter as tk
