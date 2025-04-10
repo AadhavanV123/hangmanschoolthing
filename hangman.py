@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import ttk
 from tkinter import *
 from tkinter.ttk import *
 import time
@@ -12,7 +13,7 @@ import sys
 import pandas as pd
 from pygame import mixer
 
-## NEED TO DO SOUND EFFECTS (ONLY IN HOME) AND NEED TO ADD PLAYER NAMES AND PROGRESS BAR
+## NEED TO DO SOUND EFFECTS (ONLY IN HOME) AND NEED TO ADD PLAYER NAMES
 
 ##Total wins, total losses
 ##
@@ -202,9 +203,13 @@ def game():
     global scorefilepath
     global scoredf
     global score_lbl
+    global progress_bar
+    global progress_var
+    global progress_inc_val
+    global onlyletword
 
     haxtext = ""
-
+    onlyletword = ""
     keyspressed = ""
         
     key, val = random.choice(list(themes.items()))
@@ -228,7 +233,7 @@ def game():
 
     wrongletnum = 1
     wrongletx = 300
-    wronglety = 165
+    wronglety = 220
 
     showletnum = 0
     ngs = 0
@@ -240,7 +245,8 @@ def game():
     hint_btns = {}
     hint_btn_num = 1
     no_of_hints = 0
-    
+
+    progress_inc_val = 1
 
     word_list = []
     for i in word.upper():
@@ -254,16 +260,25 @@ def game():
     
     minutes = 0
     timer_running = True
-    timer_text = canvas.create_text(410, 65, anchor = "center", text = "Time: 00:00", fill = "white", font=("Arial", 20, "bold"))
+    timer_text = canvas.create_text(410, 90, anchor = "center", text = "Time: 00:00", fill = "white", font=("Arial", 20, "bold"))
     themetext = "Theme: " + str(randtheme)
-    canvas.create_text(417, 100, anchor="center", text=themetext, fill = "white", font=("Arial", 20, "bold"))
+    canvas.create_text(417, 120, anchor="center", text=themetext, fill = "white", font=("Arial", 20, "bold"))
 
-    score_lbl = canvas.create_text(417, 30, anchor="center", text="Score: 00", fill = "white", font=("Arial", 20, "bold"))
+    score_lbl = canvas.create_text(417, 60, anchor="center", text="Score: 00", fill = "white", font=("Arial", 20, "bold"))
 
 
     exitgamebtn = Button(root, text = "Exit 😞" , command = exitgame, width=8)
-    canvas.create_window(545, 30, window = exitgamebtn)
+    canvas.create_window(545, 60, window = exitgamebtn)
 
+    for i in word:
+        if i.upper() in letlist:
+            onlyletword += i
+    progress_inc_val = ((1/len(onlyletword))*100)
+    print("progreihsoiuefhgo9iuyrfg90uiewy: " + str(progress_inc_val))
+    progress_bar = ttk.Progressbar(root, length=390, mode = "determinate")
+    canvas.create_window(300, 20, window = progress_bar)
+    progress_bar["value"] = 1
+    
     def update_timer():
         global seconds
         global minutes
@@ -306,7 +321,7 @@ def game():
         global no_of_hints
         print("hint yay")
         btn = Button(root, text = "Hint x" + str(hint_btn_num), command = partial(hintbtn, hint_btn_num), width=8)
-        canvas.create_window(220+60*int(hint_btn_num), 128, window = btn)
+        canvas.create_window(220+60*int(hint_btn_num), 170, window = btn)
         hint_btns["hint" + str(hint_btn_num)] = btn
         print(hint_btns)
         no_of_hints = no_of_hints + 1
@@ -435,6 +450,7 @@ def game():
         global timer_running
         global score
         global score_lbl
+        global progress_var
         
         if correct_or_wrong:
             if letter in correctlettersclicked:
@@ -465,6 +481,7 @@ def game():
 ##                                                                   fill="white", font=("Arial", 16, "bold"))
 
                         else:
+                            progress_bar["value"] += progress_inc_val
                             score += 1
                             canvas.itemconfig(score_lbl,text=f"Score: {score:02}")
                             letterlbl= canvas.create_text((DCL[0]+18), DCL[2]-18, anchor="center", text=letter, fill="white", font=("Arial", 16, "bold"))
@@ -750,7 +767,7 @@ else:
     exitgame = Button(root, text = "Exit 😞" , command = exitgamenormal, width=10)
     canvas.create_window(300, 420, window = exitgame)
     the_text = canvas.create_text(300, 100, anchor="center", text="\"Hnagman\" by Aadhavan", fill = "white", font=("Arial", 32, "bold"))
-
+    hint_time = 0
 
 canvas.pack()
 mainloop()
