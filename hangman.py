@@ -140,6 +140,7 @@ canvas = Canvas(root, bg="#025718",
 scorefilepath = "score.csv"
 score = 0
 seconds = -1
+hint_time = 0
 try:
     scoredf = pd.read_csv(scorefilepath)
 except FileNotFoundError:
@@ -747,7 +748,7 @@ def game():
 
 
 
-
+highscore_text = scoredf['Score'].max()
 #game()
 def exitgamenormal():
     root.quit()
@@ -767,7 +768,7 @@ else:
     exitgame = Button(root, text = "Exit 😞" , command = exitgamenormal, width=10)
     canvas.create_window(300, 420, window = exitgame)
     the_text = canvas.create_text(300, 100, anchor="center", text="\"Hnagman\" by Aadhavan", fill = "white", font=("Arial", 32, "bold"))
-    hint_time = 0
+    highscorelbl  = canvas.create_text(300, 185, anchor="center", text="HIGHSCORE: " + str(highscore_text), fill = "white", font=("Arial", 32, "bold"))
 
 canvas.pack()
 mainloop()
